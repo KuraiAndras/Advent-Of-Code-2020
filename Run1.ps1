@@ -1,0 +1,1 @@
+dotnet run --project ".\Advent\Advent.csproj" "D:\Advent-Of-Code-2020\Inputs\1.txt"
