@@ -9,9 +9,9 @@ namespace Advent
 {
     public static class Program
     {
-        public static async Task Main(string[] args)
+        public static async Task Main()
         {
-            var filePath = args[0];
+            var filePath = @"Inputs\1.txt";
 
             var numbers = (await File.ReadAllLinesAsync(filePath))
                 .Select(int.Parse)
