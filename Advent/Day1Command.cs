@@ -37,7 +37,7 @@ namespace Advent
 
             public int Sum { get; } = 2020;
 
-            public record Response(NumberPair Numbers, int Product) : IResponse;
+            public record Response(NumberPair Numbers, int Product, int Sum) : IResponse;
 
             public record NumberPair(int First, int Second);
 
@@ -49,7 +49,7 @@ namespace Advent
 
                     var pair = GetPair(numbers, request.Sum) ?? throw new InvalidOperationException("Did not find");
 
-                    return new Response(pair, pair.First * pair.Second);
+                    return new Response(pair, pair.First * pair.Second, pair.First + pair.Second);
                 }
 
                 private static NumberPair? GetPair(ImmutableArray<int> numbers, int sum) =>
