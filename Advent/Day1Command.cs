@@ -54,7 +54,8 @@ namespace Advent
             {
                 public async Task<Response> Handle(Day1 request, CancellationToken cancellationToken)
                 {
-                    var (first, second) = await InputHelper.Get1();
+                    var first = await InputHelper.GetInputFileByLines("1.1", int.Parse);
+                    var second = await InputHelper.GetInputFileByLines("1.2", int.Parse);
 
                     var pair = GetPair(first, request.Sum) ?? throw new InvalidOperationException("Did not find pair");
                     var terc = GetTerc(second, request.Sum) ?? throw new InvalidOperationException("Did not find terc");
