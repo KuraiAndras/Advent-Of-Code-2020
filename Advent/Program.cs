@@ -19,10 +19,10 @@ namespace Advent
 
             var stopwatch = Stopwatch.StartNew();
 
-            var message = GetNumbers(numbers) switch
+            var message = GetPair(numbers, 2020) switch
             {
                 null => "Did not find solution",
-                ({ } first, { } second) => $"{first}*{second}={first * second}",
+                var (first, second) => $"{first}*{second}={first * second}",
             };
 
             stopwatch.Stop();
@@ -31,17 +31,13 @@ namespace Advent
             Console.WriteLine($"Time to complete: {stopwatch.Elapsed}");
         }
 
-        private static (int first, int second)? GetNumbers(ImmutableArray<int> numbers)
-        {
-            foreach (var number1 in numbers)
-            {
-                foreach (var number2 in numbers.Where(number2 => number1 + number2 == 2020))
-                {
-                    return (number1, number2);
-                }
-            }
+        private static NumberPair? GetPair(ImmutableArray<int> numbers, int sum) =>
+            numbers
+                .Select(first => numbers
+                    .Select(second => new NumberPair(first, second))
+                    .FirstOrDefault(s => s.First + s.Second == sum))
+                .FirstOrDefault(p => p is not null);
 
-            return null;
-        }
+        private record NumberPair(int First, int Second);
     }
 }
