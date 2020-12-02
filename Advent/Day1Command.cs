@@ -27,37 +27,56 @@ namespace Advent
 
             stopwatch.Stop();
 
-            await console.Output.WriteLineAsync($"{response.Numbers.First}*{response.Numbers.Second}={response.Product}");
+            await console.Output.WriteLineAsync($"{response.Pair.First} * {response.Pair.Second} = {response.Pair.Product}");
+            await console.Output.WriteLineAsync($"{response.Terc.First} * {response.Terc.Second} * {response.Terc.Third} = {response.Terc.Product}");
             await console.Output.WriteLineAsync($"Time to complete: {stopwatch.Elapsed}");
         }
 
         public record Day1 : IRequest<Day1.Response>
         {
-            public int DayNumber { get; } = 1;
-
             public int Sum { get; } = 2020;
 
-            public record Response(NumberPair Numbers, int Product, int Sum) : IResponse;
+            public record Response(NumberPair Pair, NumberTerc Terc) : IResponse;
 
-            public record NumberPair(int First, int Second);
+            public record NumberPair(int First, int Second)
+            {
+                public int Product { get; } = First * Second;
+                public int Sum { get; } = First + Second;
+            }
+
+            public record NumberTerc(int First, int Second, int Third)
+            {
+                public int Product { get; } = First * Second * Third;
+                public int Sum { get; } = First + Second + Third;
+            }
 
             public sealed class Handler : IRequestHandler<Day1, Response>
             {
                 public async Task<Response> Handle(Day1 request, CancellationToken cancellationToken)
                 {
-                    var numbers = await InputHelper.GetInputFileByLines(request.DayNumber);
+                    var (first, second) = await InputHelper.Get1();
 
-                    var pair = GetPair(numbers, request.Sum) ?? throw new InvalidOperationException("Did not find");
+                    var pair = GetPair(first, request.Sum) ?? throw new InvalidOperationException("Did not find pair");
+                    var terc = GetTerc(second, request.Sum) ?? throw new InvalidOperationException("Did not find terc");
 
-                    return new Response(pair, pair.First * pair.Second, pair.First + pair.Second);
+                    return new Response(pair, terc);
                 }
 
                 private static NumberPair? GetPair(ImmutableArray<int> numbers, int sum) =>
                     numbers
                         .Select(first => numbers
                             .Select(second => new NumberPair(first, second))
-                            .FirstOrDefault(s => s.First + s.Second == sum))
+                            .FirstOrDefault(p => p.First + p.Second == sum))
                         .FirstOrDefault(p => p is not null);
+
+                private static NumberTerc? GetTerc(ImmutableArray<int> numbers, int sum) =>
+                    numbers
+                        .Select(first => numbers
+                            .Select(second => numbers
+                                .Select(third => new NumberTerc(first, second, third))
+                                .FirstOrDefault(t => t.First + t.Second + t.Third == sum))
+                            .FirstOrDefault(t => t is not null))
+                        .FirstOrDefault(t => t is not null);
             }
         }
     }

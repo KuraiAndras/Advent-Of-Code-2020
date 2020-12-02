@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Advent.Tests
 {
-    public class UnitTest1
+    public class DayTests
     {
         private readonly IMediator _mediator = Program.CreateServiceProvider().GetRequiredService<IMediator>();
 
@@ -19,7 +19,8 @@ namespace Advent.Tests
             var response = await _mediator.Send(request);
 
             // Assert
-            Assert.Equal(2020, response.Sum);
+            Assert.Equal(2020, response.Pair.Sum);
+            Assert.Equal(2020, response.Terc.Sum);
         }
     }
 }
