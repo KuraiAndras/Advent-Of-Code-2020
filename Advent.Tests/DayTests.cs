@@ -29,7 +29,7 @@ namespace Advent.Tests
         public async Task Day1()
         {
             // Arrange
-            var request = new Day1Command.Day1();
+            var request = new Day1();
 
             // Act
             var response = await _mediator.Send(request);
@@ -41,7 +41,7 @@ namespace Advent.Tests
             response.Terc.HasValue.Should().BeTrue();
             response.Terc.MatchSome(CheckResponse);
 
-            void CheckResponse(Day1Command.Day1.IDay1Data data)
+            void CheckResponse(Day1.IDay1Data data)
             {
                 data.Sum.Should().Be(2020);
                 _output.WriteLine($"Second Half: {data.Product}");
