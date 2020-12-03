@@ -7,7 +7,7 @@ namespace Advent
     [Command("Day2")]
     public sealed class Day2Command : ICommand
     {
-        public async ValueTask ExecuteAsync(IConsole console)
+        public ValueTask ExecuteAsync(IConsole console)
         {
             throw new System.NotImplementedException();
         }

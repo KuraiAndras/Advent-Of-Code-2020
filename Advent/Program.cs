@@ -1,6 +1,8 @@
 ﻿using CliFx;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -13,11 +15,20 @@ namespace Advent
         public static async Task Main() =>
             await new CliApplicationBuilder()
                 .AddCommandsFromThisAssembly()
-                .UseTypeActivator(CreateServiceProvider().GetThrowingService)
+                .UseTypeActivator(
+                    Injector.CreateServiceProvider(builder =>
+                        builder.AddSerilog(
+                            new LoggerConfiguration()
+                                .WriteTo.Console()
+                                .CreateLogger()))
+                    .GetThrowingService)
                 .Build()
                 .RunAsync();
+    }
 
-        public static IServiceProvider CreateServiceProvider()
+    public static class Injector
+    {
+        public static IServiceProvider CreateServiceProvider(Action<ILoggingBuilder> loggerBuilder)
         {
             IServiceCollection services = new ServiceCollection();
 
@@ -26,6 +37,8 @@ namespace Advent
             services.AddMediatR(assemblyToScan);
             services.AddCommands(assemblyToScan);
 
+            services.AddLogging(builder => loggerBuilder(builder));
+            services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(StopwatchBehavior<,>));
 
             return services.BuildServiceProvider();
         }
