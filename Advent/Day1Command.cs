@@ -3,7 +3,6 @@ using CliFx.Attributes;
 using MediatR;
 using System;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,19 +16,12 @@ namespace Advent
 
         public Day1Command(IMediator mediator) => _mediator = mediator;
 
-        public int DayNumber { get; } = 1;
-
         public async ValueTask ExecuteAsync(IConsole console)
         {
-            var stopwatch = Stopwatch.StartNew();
-
             var response = await _mediator.Send(new Day1());
-
-            stopwatch.Stop();
 
             await console.Output.WriteLineAsync($"{response.Pair.First} * {response.Pair.Second} = {response.Pair.Product}");
             await console.Output.WriteLineAsync($"{response.Terc.First} * {response.Terc.Second} * {response.Terc.Third} = {response.Terc.Product}");
-            await console.Output.WriteLineAsync($"Time to complete: {stopwatch.Elapsed}");
         }
 
         public record Day1 : IRequest<Day1.Response>
