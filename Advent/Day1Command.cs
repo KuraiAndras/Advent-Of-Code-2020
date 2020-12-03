@@ -1,7 +1,7 @@
 using CliFx;
 using CliFx.Attributes;
 using MediatR;
-using System;
+using Optional;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
@@ -20,23 +20,34 @@ namespace Advent
         {
             var response = await _mediator.Send(new Day1());
 
-            await console.Output.WriteLineAsync($"{response.Pair.First} * {response.Pair.Second} = {response.Pair.Product}");
-            await console.Output.WriteLineAsync($"{response.Terc.First} * {response.Terc.Second} * {response.Terc.Third} = {response.Terc.Product}");
+            await response.Pair.Match(
+                p => console.Output.WriteLineAsync($"{p.First} * {p.Second} = {p.Product}"),
+                () => console.Output.WriteLineAsync("Did not find pair"));
+
+            await response.Terc.Match(
+                t => console.Output.WriteLineAsync($"{t.First} * {t.Second} * {t.Third}= {t.Product}"),
+                () => console.Output.WriteLineAsync("Did not find terc"));
         }
 
         public record Day1 : IRequest<Day1.Response>
         {
             public int Sum { get; } = 2020;
 
-            public record Response(NumberPair Pair, NumberTerc Terc) : IResponse;
+            public record Response(Option<NumberPair> Pair, Option<NumberTerc> Terc) : IResponse;
 
-            public record NumberPair(int First, int Second)
+            public interface IDay1Data
+            {
+                int Product { get; }
+                int Sum { get; }
+            }
+
+            public record NumberPair(int First, int Second) : IDay1Data
             {
                 public int Product { get; } = First * Second;
                 public int Sum { get; } = First + Second;
             }
 
-            public record NumberTerc(int First, int Second, int Third)
+            public record NumberTerc(int First, int Second, int Third) : IDay1Data
             {
                 public int Product { get; } = First * Second * Third;
                 public int Sum { get; } = First + Second + Third;
@@ -49,8 +60,8 @@ namespace Advent
                     var first = await InputHelper.GetInputFileByLines("1.1", int.Parse);
                     var second = await InputHelper.GetInputFileByLines("1.2", int.Parse);
 
-                    var pair = GetPair(first, request.Sum) ?? throw new InvalidOperationException("Did not find pair");
-                    var terc = GetTerc(second, request.Sum) ?? throw new InvalidOperationException("Did not find terc");
+                    var pair = GetPair(first, request.Sum)?.Some() ?? Option.None<NumberPair>();
+                    var terc = GetTerc(second, request.Sum)?.Some() ?? Option.None<NumberTerc>();
 
                     return new Response(pair, terc);
                 }

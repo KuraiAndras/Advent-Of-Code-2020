@@ -1,3 +1,4 @@
+using FluentAssertions;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
@@ -34,11 +35,17 @@ namespace Advent.Tests
             var response = await _mediator.Send(request);
 
             // Assert
-            Assert.Equal(2020, response.Pair.Sum);
-            _output.WriteLine($"First Half: {response.Pair.Product}");
+            response.Pair.HasValue.Should().BeTrue();
+            response.Pair.MatchSome(CheckResponse);
 
-            Assert.Equal(2020, response.Terc.Sum);
-            _output.WriteLine($"Second Half: {response.Terc.Product}");
+            response.Terc.HasValue.Should().BeTrue();
+            response.Terc.MatchSome(CheckResponse);
+
+            void CheckResponse(Day1Command.Day1.IDay1Data data)
+            {
+                data.Sum.Should().Be(2020);
+                _output.WriteLine($"Second Half: {data.Product}");
+            }
         }
     }
 }
