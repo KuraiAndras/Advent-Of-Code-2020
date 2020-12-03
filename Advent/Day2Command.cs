@@ -1,5 +1,6 @@
 ﻿using CliFx;
 using CliFx.Attributes;
+using MediatR;
 using System.Threading.Tasks;
 
 namespace Advent
@@ -7,9 +8,15 @@ namespace Advent
     [Command("Day2")]
     public sealed class Day2Command : ICommand
     {
-        public ValueTask ExecuteAsync(IConsole console)
+        private readonly ISender _sender;
+
+        public Day2Command(ISender sender) => _sender = sender;
+
+        public async ValueTask ExecuteAsync(IConsole console)
         {
-            throw new System.NotImplementedException();
+            var response = await _sender.Send(new Day2());
+
+            await console.Output.WriteLineAsync($"Found: {response.ValidCount}");
         }
     }
 }

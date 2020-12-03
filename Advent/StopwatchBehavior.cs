@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Advent
 {
-    public sealed class StopwatchBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<IResponse>
+    public sealed class StopwatchBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
     {
         private readonly ILogger<StopwatchBehavior<TRequest, TResponse>> _logger;
 
@@ -20,7 +20,7 @@ namespace Advent
 
             stopwatch.Stop();
 
-            _logger.LogInformation("TIme to complete {Ellapsed}", stopwatch.Elapsed);
+            _logger.LogInformation("Time to complete {Ellapsed}", stopwatch.Elapsed);
 
             return response;
         }

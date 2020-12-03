@@ -47,5 +47,18 @@ namespace Advent.Tests
                 _output.WriteLine($"Second Half: {data.Product}");
             }
         }
+
+        [Fact]
+        public async Task Day2()
+        {
+            // Arrange
+            var request = new Day2();
+
+            // Act
+            var response = await _mediator.Send(request);
+
+            // Assert
+            response.ValidCount.Should().Be(467);
+        }
     }
 }
